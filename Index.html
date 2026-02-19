@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sudar Door</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<style>
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  background:#0b0b0c;
+  color:#fff;
+}
+
+header{
+  padding:20px;
+  font-size:20px;
+  font-weight:700;
+}
+
+.subtitle{
+  font-size:13px;
+  opacity:.6;
+  margin-top:4px;
+}
+
+.container{
+  padding:15px;
+}
+
+.card{
+  background:#141416;
+  border-radius:18px;
+  margin-bottom:20px;
+  overflow:hidden;
+  box-shadow:0 15px 40px rgba(0,0,0,.6);
+  transition:.3s;
+}
+
+.card:hover{
+  transform:translateY(-3px);
+}
+
+.card img{
+  width:100%;
+  display:block;
+}
+
+.card-body{
+  padding:15px;
+}
+
+.price{
+  color:#e0b15c;
+  font-weight:700;
+  margin:8px 0;
+}
+
+button{
+  background:#e0b15c;
+  color:#000;
+  border:none;
+  padding:12px;
+  border-radius:12px;
+  font-weight:700;
+  width:100%;
+}
+
+.back{
+  padding:15px;
+  cursor:pointer;
+  opacity:.7;
+}
+
+.product-page{
+  display:none;
+  padding:15px;
+}
+
+.bottom-bar{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:#111;
+  padding:15px;
+  box-shadow:0 -10px 30px rgba(0,0,0,.7);
+}
+
+.sheet{
+  position:fixed;
+  bottom:-100%;
+  left:0;
+  width:100%;
+  background:#1a1a1c;
+  border-radius:20px 20px 0 0;
+  padding:20px;
+  transition:.4s;
+}
+
+.sheet.active{
+  bottom:0;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  margin-bottom:10px;
+  border-radius:10px;
+  border:none;
+  background:#111;
+  color:#fff;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  Sudar Door
+  <div class="subtitle">Москва и МО • Гарантия 5 лет</div>
+</header>
+
+<div class="container" id="catalog"></div>
+
+<div class="product-page" id="productPage">
+  <div class="back" onclick="back()">← Назад</div>
+  <img id="productImage" style="width:100%;border-radius:15px;">
+  <h2 id="productName"></h2>
+  <div class="price" id="productPrice"></div>
+</div>
+
+<div class="bottom-bar" id="bottomBar" style="display:none;">
+  <button onclick="openForm()">Получить расчет</button>
+</div>
+
+<div class="sheet" id="formSheet">
+  <h3>Оставьте телефон</h3>
+  <input type="text" id="name" placeholder="Имя">
+  <input type="tel" id="phone" placeholder="Телефон">
+  <button onclick="sendLead()">Отправить</button>
+  <div style="margin-top:10px;text-align:center;opacity:.6;cursor:pointer;" onclick="closeForm()">Отмена</div>
+</div>
+
+<script>
+const tg = window.Telegram.WebApp;
+tg.expand();
+
+let catalog=[];
+let currentProduct=null;
+
+fetch("catalog.json")
+.then(r=>r.json())
+.then(data=>{
+  catalog=data;
+  renderCatalog();
+});
+
+function renderCatalog(){
+  const container=document.getElementById("catalog");
+  container.innerHTML="";
+  catalog.forEach(p=>{
+    container.innerHTML+=`
+      <div class="card" onclick="openProduct(${p.id})">
+        <img src="${p.image || 'https://via.placeholder.com/600x400?text=Door'}">
+        <div class="card-body">
+          <div>${p.name}</div>
+          <div class="price">${p.price.toLocaleString()} ₽</div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function openProduct(id){
+  currentProduct=catalog.find(p=>p.id===id);
+  document.getElementById("catalog").style.display="none";
+  document.getElementById("productPage").style.display="block";
+  document.getElementById("bottomBar").style.display="block";
+  document.getElementById("productName").innerText=currentProduct.name;
+  document.getElementById("productPrice").innerText=currentProduct.price.toLocaleString()+" ₽";
+  document.getElementById("productImage").src=currentProduct.image || 'https://via.placeholder.com/600x400?text=Door';
+}
+
+function back(){
+  document.getElementById("catalog").style.display="block";
+  document.getElementById("productPage").style.display="none";
+  document.getElementById("bottomBar").style.display="none";
+}
+
+function openForm(){
+  document.getElementById("formSheet").classList.add("active");
+}
+
+function closeForm(){
+  document.getElementById("formSheet").classList.remove("active");
+}
+
+function sendLead(){
+  const name=document.getElementById("name").value;
+  const phone=document.getElementById("phone").value;
+
+  if(!phone){
+    alert("Введите телефон");
+    return;
+  }
+
+  tg.sendData(JSON.stringify({
+    model:currentProduct.name,
+    price:currentProduct.price,
+    name:name,
+    phone:phone
+  }));
+
+  closeForm();
+}
+</script>
+
+</body>
+</html>
