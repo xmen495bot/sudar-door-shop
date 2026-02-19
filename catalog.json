@@ -1,0 +1,130 @@
+[
+  {
+    "id": 1,
+    "name": "ART Ultima ZERO black антик медь",
+    "price": 52500,
+    "color": "черный / антик медь",
+    "mirror": false,
+    "image": ""
+  },
+  {
+    "id": 2,
+    "name": "ART Ultima ZERO black с зеркалом",
+    "price": 61300,
+    "color": "черный / антик медь",
+    "mirror": true,
+    "image": ""
+  },
+  {
+    "id": 3,
+    "name": "ART Ultima S1Z",
+    "price": 47500,
+    "color": "стандарт",
+    "mirror": false,
+    "image": ""
+  },
+  {
+    "id": 4,
+    "name": "ART Ultima S1Z с зеркалом",
+    "price": 53500,
+    "color": "стандарт",
+    "mirror": true,
+    "image": ""
+  },
+  {
+    "id": 5,
+    "name": "ART S12-Z",
+    "price": 48700,
+    "color": "стандарт",
+    "mirror": false,
+    "image": ""
+  },
+  {
+    "id": 6,
+    "name": "ART S12-Z с зеркалом",
+    "price": 55800,
+    "color": "стандарт",
+    "mirror": true,
+    "image": ""
+  },
+  {
+    "id": 7,
+    "name": "ART S11 White",
+    "price": 42700,
+    "color": "белый",
+    "mirror": false,
+    "image": ""
+  },
+  {
+    "id": 8,
+    "name": "ART S11 White с зеркалом",
+    "price": 50500,
+    "color": "белый",
+    "mirror": true,
+    "image": ""
+  },
+  {
+    "id": 9,
+    "name": "ART S10 белый камень",
+    "price": 38500,
+    "color": "белый",
+    "mirror": false,
+    "image": ""
+  },
+  {
+    "id": 10,
+    "name": "ART S10 белый камень с зеркалом",
+    "price": 46100,
+    "color": "белый",
+    "mirror": true,
+    "image": ""
+  },
+  {
+    "id": 11,
+    "name": "Дива-74 Олива софт",
+    "price": 45900,
+    "color": "олива софт",
+    "mirror": false,
+    "image": ""
+  },
+  {
+    "id": 12,
+    "name": "Дива-97/1 Дуб натуральный гладкий",
+    "price": 45900,
+    "color": "дуб натуральный",
+    "mirror": false,
+    "image": ""
+  },
+  {
+    "id": 13,
+    "name": "МД-45 РоялВуд синий",
+    "price": 42700,
+    "color": "синий",
+    "mirror": false,
+    "image": ""
+  },
+  {
+    "id": 14,
+    "name": "МД-48 Бетон темный",
+    "price": 43000,
+    "color": "бетон темный",
+    "mirror": false,
+    "image": ""
+  },
+  {
+    "id": 15,
+    "name": "МД-51 Бетон темный",
+    "price": 44200,
+    "color": "бетон темный",
+    "mirror": false,
+    "image": ""
+  },
+  {
+    "id": 16,
+    "name": "МД-40 Черный титан",
+    "price": 42000,
+    "color": "черный",
+    "mirror": false,
+    "image": ""
+  }
+]
