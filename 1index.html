@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Sudar Door — Москва и МО</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<style>
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #0f0f10;
+  color: #fff;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 22px;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  font-size: 14px;
+  opacity: 0.7;
+  margin-bottom: 20px;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+select, input {
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  background: #1a1a1c;
+  color: white;
+  flex: 1;
+}
+
+.card {
+  background: #161618;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 25px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+
+.card img {
+  width: 100%;
+}
+
+.card-content {
+  padding: 15px;
+}
+
+.price {
+  margin: 8px 0;
+  font-weight: bold;
+  color: #d4af37;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(45deg, #caa34d, #f5e0a3);
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.9);
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-box {
+  background: #1a1a1c;
+  padding: 20px;
+  border-radius: 15px;
+  width: 90%;
+}
+
+.form-box input {
+  width: 100%;
+  margin-bottom: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🚪 Sudar Door</h1>
+<div class="subtitle">Москва и Московская область<br>Бесплатный замер • Гарантия 5 лет</div>
+
+<div class="filters">
+  <select id="colorFilter">
+    <option value="">Все цвета</option>
+  </select>
+
+  <select id="mirrorFilter">
+    <option value="">Зеркало</option>
+    <option value="true">С зеркалом</option>
+    <option value="false">Без зеркала</option>
+  </select>
+
+  <input type="number" id="minPrice" placeholder="Цена от">
+  <input type="number" id="maxPrice" placeholder="Цена до">
+</div>
+
+<div id="products"></div>
+
+<div class="form-overlay" id="formOverlay">
+  <div class="form-box">
+    <h3 id="formTitle"></h3>
+    <input type="text" id="clientName" placeholder="Ваше имя">
+    <input type="tel" id="clientPhone" placeholder="Телефон" required>
+    <button onclick="submitForm()">Получить консультацию</button>
+  </div>
+</div>
+
+<script>
+const tg = window.Telegram.WebApp;
+tg.expand();
+
+let catalog = [];
+let selectedProduct = null;
+
+fetch("catalog.json")
+  .then(res => res.json())
+  .then(data => {
+    catalog = data;
+    initFilters();
+    renderProducts();
+  });
+
+function initFilters() {
+  const colors = [...new Set(catalog.map(p => p.color))];
+  const colorSelect = document.getElementById("colorFilter");
+
+  colors.forEach(color => {
+    const opt = document.createElement("option");
+    opt.value = color;
+    opt.textContent = color;
+    colorSelect.appendChild(opt);
+  });
+}
+
+function renderProducts() {
+  const container = document.getElementById("products");
+  container.innerHTML = "";
+
+  const color = document.getElementById("colorFilter").value;
+  const mirror = document.getElementById("mirrorFilter").value;
+  const min = document.getElementById("minPrice").value;
+  const max = document.getElementById("maxPrice").value;
+
+  const filtered = catalog.filter(p => {
+    return (
+      (!color || p.color === color) &&
+      (!mirror || String(p.mirror) === mirror) &&
+      (!min || p.price >= min) &&
+      (!max || p.price <= max)
+    );
+  });
+
+  filtered.forEach(product => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <img src="${product.image}">
+      <div class="card-content">
+        <h3>${product.name}</h3>
+        <div class="price">${product.price.toLocaleString()} ₽</div>
+        <button onclick="openForm(${product.id})">
+          Получить расчет
+        </button>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function openForm(id) {
+  selectedProduct = catalog.find(p => p.id === id);
+  document.getElementById("formTitle").innerText =
+    selectedProduct.name + " — " +
+    selectedProduct.price.toLocaleString() + " ₽";
+  document.getElementById("formOverlay").style.display = "flex";
+}
+
+function submitForm() {
+  const name = document.getElementById("clientName").value;
+  const phone = document.getElementById("clientPhone").value;
+
+  if (!phone) {
+    alert("Введите телефон");
+    return;
+  }
+
+  tg.sendData(JSON.stringify({
+    model: selectedProduct.name,
+    price: selectedProduct.price,
+    name: name,
+    phone: phone
+  }));
+
+  document.getElementById("formOverlay").style.display = "none";
+}
+
+document.querySelectorAll("select,input").forEach(el =>
+  el.addEventListener("change", renderProducts)
+);
+</script>
+
+</body>
+</html>
